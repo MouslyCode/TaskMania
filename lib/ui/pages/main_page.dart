@@ -1,13 +1,41 @@
 part of 'pages.dart';
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
   MainPage({super.key});
 
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
   final List<String> entries = <String>['A', 'B', 'C'];
+  List<String> _tasks = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTask();
+  }
+
+  @override
+  void didChangeDependencies() {
+    CircularProgressIndicator();
+    super.didChangeDependencies();
+    _loadTask();
+  }
+
+  Future<void> _loadTask() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _tasks = prefs.getStringList('tasks') ?? [];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Color(0xFF615BE6),
         title: Text(
           'Todo List',
@@ -22,13 +50,23 @@ class MainPage extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: ListView.separated(
             padding: EdgeInsets.all(8),
-            itemCount: entries.length,
+            itemCount: _tasks.length,
             itemBuilder: (BuildContext context, index) {
+              final task = _tasks[index].split('|')[0];
+              final date = _tasks[index].split('|')[1];
               return Container(
                 height: 50,
                 color: Colors.blue,
                 child: Center(
-                  child: Text('Entry ${entries[index]}'),
+                  child: Column(
+                    children: [
+                      Text(
+                        '$task',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      Text('$date')
+                    ],
+                  ),
                 ),
               );
             },
@@ -41,7 +79,12 @@ class MainPage extends StatelessWidget {
             Icons.add,
             color: Colors.white,
           ),
-          onPressed: null),
+          onPressed: () {
+            Navigator.push(
+              context,
+              CupertinoPageRoute(builder: (context) => TambahTodoPage()),
+            );
+          }),
     );
   }
 }

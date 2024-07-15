@@ -10,6 +10,7 @@ class TambahTodoPage extends StatefulWidget {
 class _TambahTodoPageState extends State<TambahTodoPage> {
   final TextEditingController _taskController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+  List<String> _tasks = [];
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime selectedDate = DateTime.now();
@@ -22,6 +23,33 @@ class _TambahTodoPageState extends State<TambahTodoPage> {
       setState(() {
         _dateController.text = "${picked.toLocal()}".split(' ')[0];
       });
+  }
+
+  Future<void> _saveTask() async {
+    final String task = _taskController.text;
+    final String date = _dateController.text;
+
+    if (task.isNotEmpty && date.isNotEmpty) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<String> tasks = prefs.getStringList('tasks') ?? [];
+      tasks.add('$task|$date');
+      await prefs.setStringList('tasks', tasks);
+
+      _taskController.clear();
+      _dateController.clear();
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Success')));
+
+      setState(() {
+        _tasks = tasks;
+      });
+      Navigator.push(
+          context, CupertinoPageRoute(builder: (context) => MainPage()));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please Enter both Task and Date')));
+    }
   }
 
   @override
@@ -64,6 +92,8 @@ class _TambahTodoPageState extends State<TambahTodoPage> {
               child: AbsorbPointer(
                 child: TextFormField(
                   controller: _dateController,
+                  style: TextStyle(
+                      color: Color(0xFF615BE6), fontWeight: FontWeight.w500),
                   decoration: InputDecoration(
                       labelText: "Enter Date",
                       suffixIcon: Icon(
@@ -77,7 +107,7 @@ class _TambahTodoPageState extends State<TambahTodoPage> {
               height: 33,
             ),
             ElevatedButton(
-                onPressed: () {},
+                onPressed: _saveTask,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF615BE6),
                 ),
