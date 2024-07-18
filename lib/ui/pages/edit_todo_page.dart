@@ -1,16 +1,15 @@
 part of 'pages.dart';
 
-class TambahTodoPage extends StatefulWidget {
-  TambahTodoPage({super.key});
+class EditTodoPage extends StatefulWidget {
+  const EditTodoPage({super.key});
 
   @override
-  State<TambahTodoPage> createState() => _TambahTodoPageState();
+  State<EditTodoPage> createState() => _EditTodoPageState();
 }
 
-class _TambahTodoPageState extends State<TambahTodoPage> {
+class _EditTodoPageState extends State<EditTodoPage> {
   final TextEditingController _taskController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
-  // ignore: unused_field
   List<String> _tasks = [];
 
   Future<void> _selectDate(BuildContext context) async {
@@ -26,34 +25,9 @@ class _TambahTodoPageState extends State<TambahTodoPage> {
       });
   }
 
-  Future<void> _saveTask() async {
-    final String task = _taskController.text;
-    final String date = _dateController.text;
-
-    if (task.isNotEmpty && date.isNotEmpty) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      List<String> tasks = prefs.getStringList('tasks') ?? [];
-      tasks.add('$task|$date');
-      await prefs.setStringList('tasks', tasks);
-
-      _taskController.clear();
-      _dateController.clear();
-
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Success')));
-
-      setState(() {
-        _tasks = tasks;
-      });
-      Navigator.pushAndRemoveUntil(
-        context,
-        CupertinoPageRoute(builder: (context) => MainPage()),
-        (Route<dynamic> route) => false,
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please Enter both Task and Date')));
-    }
+  Future<void> _loadTask() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _tasks = prefs.getStringList('tasks') ?? [];
   }
 
   @override
@@ -111,7 +85,7 @@ class _TambahTodoPageState extends State<TambahTodoPage> {
               height: 33,
             ),
             ElevatedButton(
-                onPressed: _saveTask,
+                onPressed: null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF615BE6),
                 ),

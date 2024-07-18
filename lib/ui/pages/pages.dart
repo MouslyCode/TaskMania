@@ -6,5 +6,6 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+part 'edit_todo_page.dart';
 part 'main_page.dart';
 part 'tambah_todo_page.dart';
