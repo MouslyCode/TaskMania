@@ -30,6 +30,10 @@ class _EditTodoPageState extends State<EditTodoPage> {
     _tasks = prefs.getStringList('tasks') ?? [];
   }
 
+  Future<void> _deleteTask() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +46,7 @@ class _EditTodoPageState extends State<EditTodoPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  'Add ',
+                  'Edit ',
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
@@ -84,15 +88,29 @@ class _EditTodoPageState extends State<EditTodoPage> {
             const SizedBox(
               height: 33,
             ),
-            ElevatedButton(
-                onPressed: null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF615BE6),
-                ),
-                child: const Text(
-                  'Add',
-                  style: TextStyle(color: Colors.white),
-                ))
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                    onPressed: null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF615BE6),
+                    ),
+                    child: const Text(
+                      'Edit',
+                      style: TextStyle(color: Colors.white),
+                    )),
+                ElevatedButton(
+                    onPressed: _deleteTask,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    child: const Text(
+                      'Delete',
+                      style: TextStyle(color: Colors.white),
+                    )),
+              ],
+            )
           ],
         ),
       ),

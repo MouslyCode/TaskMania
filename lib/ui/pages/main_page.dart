@@ -10,6 +10,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final List<String> entries = <String>['A', 'B', 'C'];
   List<String> _tasks = [];
+  List<bool> _checkedTask = [false];
   bool isChecked = false;
 
   @override
@@ -29,6 +30,31 @@ class _MainPageState extends State<MainPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _tasks = prefs.getStringList('tasks') ?? [];
+      _checkedTask = List<bool>.filled(_tasks.length, false);
+    });
+  }
+
+  Future<void> _deleteTask(int index) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _tasks.removeAt(index);
+      _checkedTask.removeAt(index);
+      prefs.setStringList('tasks', _tasks);
+    });
+  }
+
+  void checked() {
+    setState(() {
+      isChecked = !isChecked;
+    });
+  }
+
+  void toggleChecked(int index) {
+    setState(() {
+      _checkedTask[index] = !_checkedTask[index];
+      // if (_checkedTask[index]) {
+      //   _deleteTask(index);
+      // }
     });
   }
 
@@ -43,14 +69,14 @@ class _MainPageState extends State<MainPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              'Todo ',
+              'Task ',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF615BE6),
               ),
             ),
             Text(
-              'List',
+              'Mania',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
@@ -61,74 +87,123 @@ class _MainPageState extends State<MainPage> {
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          itemCount: _tasks.length,
-          itemBuilder: (BuildContext context, index) {
-            final task = _tasks[index].split('|')[0];
-            final date = _tasks[index].split('|')[1];
-            return InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  CupertinoPageRoute(
-                      builder: (context) => const EditTodoPage()),
-                );
-              },
-              child: Container(
-                height: 95,
-                decoration: const BoxDecoration(),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '$task',
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                                color: const Color(0xFF615BE6),
-                                borderRadius: BorderRadius.circular(16)),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 3, horizontal: 10),
-                              child: Text(
-                                '$date',
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                      Checkbox(
-                          checkColor: Colors.white,
-                          value: isChecked,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              isChecked = value!;
-                            });
-                          })
-                    ],
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 15,
                   ),
-                ),
+                  Container(
+                    height: 150,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                    ),
+                    child: Text(
+                      'Calendar',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  )
+                ],
               ),
-            );
-          },
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, index) {
+                  if (index >= _tasks.length) return null;
+                  final task = _tasks[index].split('|')[0];
+                  final date = _tasks[index].split('|')[1];
+                  return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) => const EditTodoPage()),
+                      );
+                    },
+                    child: Container(
+                      height: 95,
+                      decoration: const BoxDecoration(),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  '$task',
+                                  style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      color: const Color(0xFF615BE6),
+                                      borderRadius: BorderRadius.circular(16)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 3, horizontal: 10),
+                                    child: Text(
+                                      '$date',
+                                      style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            GestureDetector(
+                              onTap: () => toggleChecked(index),
+                              child:
+                                  Stack(alignment: Alignment.center, children: [
+                                Container(
+                                  height: 30,
+                                  width: 30,
+                                  decoration: BoxDecoration(
+                                    color: _checkedTask[index]
+                                        ? Colors.transparent
+                                        : Color(0xFF615BE6),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: _checkedTask[index]
+                                          ? Colors.grey
+                                          : Color(0xFF615BE6),
+                                      width: 2,
+                                    ),
+                                  ),
+                                ),
+                                Icon(
+                                  size: 20,
+                                  Icons.check,
+                                  color: _checkedTask[index]
+                                      ? Colors.grey
+                                      : Colors.white,
+                                )
+                              ]),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
