@@ -1,7 +1,8 @@
 part of 'pages.dart';
 
 class TambahTodoPage extends StatefulWidget {
-  TambahTodoPage({super.key});
+  final index, value;
+  TambahTodoPage({this.index, this.value, super.key});
 
   @override
   State<TambahTodoPage> createState() => _TambahTodoPageState();

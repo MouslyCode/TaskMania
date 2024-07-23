@@ -8,44 +8,38 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final List<String> entries = <String>['A', 'B', 'C'];
   List<String> _tasks = [];
   List<bool> _checkedTask = [false];
-  bool isChecked = false;
 
+// Load Task
   @override
   void initState() {
     super.initState();
     _loadTask();
   }
 
-  @override
-  void didChangeDependencies() {
-    const CircularProgressIndicator();
-    super.didChangeDependencies();
-    _loadTask();
-  }
+  // void didChangeDependencies() {
+  //   const CircularProgressIndicator();
+  //   super.didChangeDependencies();
+  //   _loadTask();
+  // }
 
+  // Loading Data
   Future<void> _loadTask() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _tasks = prefs.getStringList('tasks') ?? [];
-      _checkedTask = List<bool>.filled(_tasks.length, false);
+      _checkedTask = List<bool>.filled(_tasks.length, true);
     });
   }
 
+  // delete data
   Future<void> _deleteTask(int index) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _tasks.removeAt(index);
       _checkedTask.removeAt(index);
       prefs.setStringList('tasks', _tasks);
-    });
-  }
-
-  void checked() {
-    setState(() {
-      isChecked = !isChecked;
     });
   }
 
@@ -61,55 +55,96 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
-        title: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              'Task ',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF615BE6),
-              ),
-            ),
-            Text(
-              'Mania',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ),
-        centerTitle: true,
-      ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
               child: Column(
                 children: [
-                  SizedBox(
-                    height: 15,
+                  Stack(
+                    children: [
+                      SafeArea(
+                          child: Container(
+                        color: Colors.white,
+                      )),
+                      SafeArea(
+                          child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(12),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // Text
+                                Container(
+                                  width: 120,
+                                  padding: EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Color(0xFF615BE6), width: 1.5),
+                                      borderRadius: BorderRadius.circular(20)),
+                                  child: Center(
+                                    child: Text(
+                                      'TaskMania',
+                                      style: TextStyle(
+                                          fontStyle: FontStyle.italic,
+                                          color: Color(0xFF615BE6),
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 20),
+                                    ),
+                                  ),
+                                ),
+                                // Icon
+                                Icon(
+                                  Icons.notifications_active_outlined,
+                                  size: 30,
+                                  color: Color(0xFF615BE6),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ))
+                    ],
                   ),
-                  Container(
-                    height: 150,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                    ),
-                    child: Text(
-                      'Calendar',
-                      textAlign: TextAlign.center,
+                  SizedBox(
+                    width: 500,
+                    height: 300,
+                    child: Container(
+                        decoration: const BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TableCalendar(
+                              shouldFillViewport: true,
+                              headerStyle: const HeaderStyle(
+                                  titleCentered: true,
+                                  formatButtonVisible: false),
+                              focusedDay: DateTime.now(),
+                              firstDay: DateTime.now(),
+                              lastDay: DateTime.utc(2100)),
+                        )),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Task List',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
+                        Text('See all')
+                      ],
                     ),
                   ),
-                  SizedBox(
-                    height: 10,
-                  )
                 ],
               ),
             ),
@@ -124,11 +159,11 @@ class _MainPageState extends State<MainPage> {
                       Navigator.push(
                         context,
                         CupertinoPageRoute(
-                            builder: (context) => const EditTodoPage()),
+                            builder: (context) => EditTodoPage()),
                       );
                     },
                     child: Container(
-                      height: 95,
+                      height: 80,
                       decoration: const BoxDecoration(),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -143,7 +178,7 @@ class _MainPageState extends State<MainPage> {
                                   '$task',
                                   style: const TextStyle(
                                       color: Colors.black,
-                                      fontSize: 18,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.w500),
                                 ),
                                 const SizedBox(
@@ -160,6 +195,7 @@ class _MainPageState extends State<MainPage> {
                                       '$date',
                                       style: const TextStyle(
                                           color: Colors.white,
+                                          fontSize: 14,
                                           fontWeight: FontWeight.w500),
                                     ),
                                   ),
@@ -171,23 +207,23 @@ class _MainPageState extends State<MainPage> {
                               child:
                                   Stack(alignment: Alignment.center, children: [
                                 Container(
-                                  height: 30,
-                                  width: 30,
+                                  height: 23,
+                                  width: 23,
                                   decoration: BoxDecoration(
                                     color: _checkedTask[index]
                                         ? Colors.transparent
-                                        : Color(0xFF615BE6),
+                                        : const Color(0xFF615BE6),
                                     shape: BoxShape.circle,
                                     border: Border.all(
                                       color: _checkedTask[index]
                                           ? Colors.grey
-                                          : Color(0xFF615BE6),
+                                          : const Color(0xFF615BE6),
                                       width: 2,
                                     ),
                                   ),
                                 ),
                                 Icon(
-                                  size: 20,
+                                  size: 14,
                                   Icons.check,
                                   color: _checkedTask[index]
                                       ? Colors.grey

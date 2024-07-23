@@ -1,7 +1,9 @@
 part of 'pages.dart';
 
 class EditTodoPage extends StatefulWidget {
-  const EditTodoPage({super.key});
+  final index;
+  final value;
+  EditTodoPage({this.index, this.value, super.key});
 
   @override
   State<EditTodoPage> createState() => _EditTodoPageState();
@@ -12,6 +14,7 @@ class _EditTodoPageState extends State<EditTodoPage> {
   final TextEditingController _dateController = TextEditingController();
   List<String> _tasks = [];
 
+// Date Selector logic
   Future<void> _selectDate(BuildContext context) async {
     DateTime selectedDate = DateTime.now();
     final DateTime? picked = await showDatePicker(
@@ -25,13 +28,45 @@ class _EditTodoPageState extends State<EditTodoPage> {
       });
   }
 
+// Load Task
   Future<void> _loadTask() async {
+    final String task = _taskController.text;
+    final String date = _dateController.text;
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _tasks = prefs.getStringList('tasks') ?? [];
+    setState(() {});
   }
 
-  Future<void> _deleteTask() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+// Saving Task
+  Future<void> _saveTask() async {
+    final String task = _taskController.text;
+    final String date = _dateController.text;
+
+    if (task.isNotEmpty && date.isNotEmpty) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<String> tasks = prefs.getStringList('tasks') ?? [];
+      tasks.add('$task|$date');
+      await prefs.setStringList('tasks', tasks);
+
+      _taskController.clear();
+      _dateController.clear();
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Success')));
+
+      setState(() {
+        _tasks = tasks;
+      });
+      Navigator.pushAndRemoveUntil(
+        context,
+        CupertinoPageRoute(builder: (context) => MainPage()),
+        (Route<dynamic> route) => false,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please Enter both Task and Date')));
+    }
   }
 
   @override
@@ -65,10 +100,12 @@ class _EditTodoPageState extends State<EditTodoPage> {
             const SizedBox(
               height: 36,
             ),
+            // Input Task
             TextFormField(
               controller: _taskController,
               decoration: const InputDecoration(labelText: "Enter Task"),
             ),
+            // Date Selector
             GestureDetector(
               onTap: () => _selectDate(context),
               child: AbsorbPointer(
@@ -101,7 +138,7 @@ class _EditTodoPageState extends State<EditTodoPage> {
                       style: TextStyle(color: Colors.white),
                     )),
                 ElevatedButton(
-                    onPressed: _deleteTask,
+                    onPressed: null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                     ),
