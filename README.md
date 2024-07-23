@@ -1,4 +1,4 @@
-# todo_app
+# TaskMania
 
 A new Flutter project.
 
