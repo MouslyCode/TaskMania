@@ -109,24 +109,62 @@ class _EditTodoPageState extends State<EditTodoPage> {
               height: 36,
             ),
             // Input Task
-            TextFormField(
-              controller: _taskController,
-              decoration: const InputDecoration(labelText: "Enter Task"),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Task',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                TextFormField(
+                  controller: _taskController,
+                  decoration: const InputDecoration(
+                      hintText: 'Task',
+                      hintStyle: TextStyle(color: Colors.black26, fontSize: 14),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                        color: Color(0xFF615BE6),
+                      )),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(width: 1.0))),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 15,
             ),
             // Date Selector
             GestureDetector(
               onTap: () => _selectDate(context),
               child: AbsorbPointer(
-                child: TextFormField(
-                  controller: _dateController,
-                  style: const TextStyle(
-                      color: Color(0xFF615BE6), fontWeight: FontWeight.w500),
-                  decoration: const InputDecoration(
-                      labelText: "Enter Date",
-                      suffixIcon: Icon(
-                        Icons.calendar_today,
-                        color: Color(0xFF615BE6),
-                      )),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Date'),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    TextFormField(
+                      controller: _dateController,
+                      style: const TextStyle(
+                          color: Color(0xFF615BE6),
+                          fontWeight: FontWeight.w500),
+                      decoration: const InputDecoration(
+                          suffixIcon: Icon(
+                            Icons.calendar_today,
+                            color: Color(0xFF615BE6),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                            color: Color(0xFF615BE6),
+                          )),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(width: 1.0))),
+                    ),
+                  ],
                 ),
               ),
             ),

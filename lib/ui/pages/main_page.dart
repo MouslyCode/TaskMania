@@ -10,19 +10,35 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   List<String> _tasks = [];
   List<bool> _checkedTask = [false];
+  List<String> _users = [];
+  String _username = '';
 
 // Load Task
   @override
   void initState() {
     super.initState();
     _loadTask();
+    _loadUser();
   }
-
   // void didChangeDependencies() {
   //   const CircularProgressIndicator();
   //   super.didChangeDependencies();
   //   _loadTask();
   // }
+
+  Future<void> _loadUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _users = prefs.getStringList('user') ?? [];
+    if (_users.isNotEmpty) {
+      setState(() {
+        _username = _users[0].split('|')[0];
+      });
+    } else {
+      setState(() {
+        _username = 'Name';
+      });
+    }
+  }
 
   // Loading Data
   Future<void> _loadTask() async {
@@ -55,8 +71,9 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(237, 255, 255, 255),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
@@ -64,16 +81,18 @@ class _MainPageState extends State<MainPage> {
                 children: [
                   Stack(
                     children: [
-                      SafeArea(
-                          child: Container(
-                        color: Colors.white,
-                      )),
+                      Container(
+                        child: SafeArea(
+                            child: Container(
+                          color: Colors.white,
+                        )),
+                      ),
                       SafeArea(
                           child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
-                            padding: EdgeInsets.all(12),
+                            padding: const EdgeInsets.all(12),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -81,22 +100,15 @@ class _MainPageState extends State<MainPage> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    ClipRRect(
-                                        borderRadius: BorderRadius.circular(50),
-                                        child: Image.network(
-                                          'https://www.rollingstone.com/wp-content/uploads/2018/06/rs-17984-cranston-624-1379016978.jpg?w=624',
-                                          fit: BoxFit.cover,
-                                          width: 35,
-                                          height: 35,
-                                        )),
-                                    SizedBox(
-                                      width: 12,
+                                    Text(
+                                      'Hi,',
+                                      style: TextStyle(fontSize: 18),
                                     ),
                                     Text(
-                                      'Walter White',
-                                      style: TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w500),
+                                      _username,
+                                      style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600),
                                     )
                                   ],
                                 ),
@@ -108,11 +120,11 @@ class _MainPageState extends State<MainPage> {
                                       height: 35,
                                       width: 35,
                                       decoration: BoxDecoration(
-                                          color: Color(0xFF615BE6)
+                                          color: const Color(0xFF615BE6)
                                               .withOpacity(0.1),
                                           shape: BoxShape.circle),
                                     ),
-                                    Icon(
+                                    const Icon(
                                       Icons.notifications_outlined,
                                       size: 25,
                                       color: Color(0xFF615BE6),
@@ -223,6 +235,7 @@ class _MainPageState extends State<MainPage> {
                                 )
                               ],
                             ),
+                            // Checklist Widget
                             GestureDetector(
                               onTap: () => toggleChecked(index),
                               child:
@@ -247,7 +260,7 @@ class _MainPageState extends State<MainPage> {
                                   size: 14,
                                   Icons.check,
                                   color: _checkedTask[index]
-                                      ? Colors.grey
+                                      ? Colors.grey.withOpacity(0.0)
                                       : Colors.white,
                                 )
                               ]),
