@@ -1,9 +1,9 @@
 part of 'pages.dart';
 
 class EditTodoPage extends StatefulWidget {
-  final index;
-  final value;
-  EditTodoPage({this.index, this.value, super.key});
+  final int index;
+  final Map<String, String> value;
+  EditTodoPage({required this.index, required this.value, super.key});
 
   @override
   State<EditTodoPage> createState() => _EditTodoPageState();
@@ -13,6 +13,13 @@ class _EditTodoPageState extends State<EditTodoPage> {
   final TextEditingController _taskController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   List<String> _tasks = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _taskController.text = widget.value['tasks'] ?? '';
+    _dateController.text = widget.value['date'] ?? '';
+  }
 
 // Date Selector logic
   Future<void> _selectDate(BuildContext context) async {
@@ -28,16 +35,6 @@ class _EditTodoPageState extends State<EditTodoPage> {
       });
   }
 
-// Load Task
-  Future<void> _loadTask() async {
-    final String task = _taskController.text;
-    final String date = _dateController.text;
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    _tasks = prefs.getStringList('tasks') ?? [];
-    setState(() {});
-  }
-
 // Saving Task
   Future<void> _saveTask() async {
     final String task = _taskController.text;
@@ -46,14 +43,14 @@ class _EditTodoPageState extends State<EditTodoPage> {
     if (task.isNotEmpty && date.isNotEmpty) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       List<String> tasks = prefs.getStringList('tasks') ?? [];
-      tasks.add('$task|$date');
+      tasks[widget.index] = '$task|$date';
       await prefs.setStringList('tasks', tasks);
 
       _taskController.clear();
       _dateController.clear();
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Success')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Task Updated Successfully')));
 
       setState(() {
         _tasks = tasks;
@@ -67,6 +64,17 @@ class _EditTodoPageState extends State<EditTodoPage> {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please Enter both Task and Date')));
     }
+  }
+
+  Future<void> _deleteTask() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> tasks = prefs.getStringList('tasks') ?? [];
+    tasks.removeAt(widget.index);
+    await prefs.setStringList('tasks', tasks);
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Deleted')));
+    Navigator.pop(context);
   }
 
   @override
@@ -129,16 +137,16 @@ class _EditTodoPageState extends State<EditTodoPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                    onPressed: null,
+                    onPressed: _saveTask,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF615BE6),
                     ),
                     child: const Text(
-                      'Edit',
+                      'Save',
                       style: TextStyle(color: Colors.white),
                     )),
                 ElevatedButton(
-                    onPressed: null,
+                    onPressed: _deleteTask,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                     ),
