@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/ui/pages/login_page.dart';
 import 'package:todo_app/ui/pages/pages.dart';
+import 'package:todo_app/ui/pages/signup_page.dart';
 import 'package:todo_app/ui/pages/splash_page.dart';
 
 void main() {

@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_app/ui/pages/login_page.dart';
 import 'package:todo_app/ui/pages/pages.dart';
 
 class SplashPage extends StatefulWidget {
@@ -13,7 +15,7 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     Future.delayed(Duration(seconds: 3), () => 100).then((value) {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => MainPage()));
+          context, CupertinoPageRoute(builder: (context) => LoginPage()));
     });
     super.initState();
   }
@@ -21,25 +23,15 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
+      backgroundColor: Color(0xFF615BE6),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Task',
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Mania',
-                style: TextStyle(
-                    fontSize: 30,
-                    color: const Color(0xFF615BE6),
-                    fontWeight: FontWeight.w600),
-              )
-            ],
-          ),
+          Text(
+            'TaskMania',
+            style: TextStyle(
+                fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
+          )
         ],
       ),
     );
