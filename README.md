@@ -1,6 +1,6 @@
 # TaskMania
 
-A new Flutter project.
+A new Flutter project using Shared Preferences as data
 
 ## Getting Started
 
